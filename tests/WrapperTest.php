@@ -1,49 +1,49 @@
 <?php
 
-use Semaio\TrelloApi\Manager;
-use PHPUnit\Framework\TestCase;
 use Illuminate\Contracts\Config\Repository;
+use LaravelTrello\Wrapper;
+use PHPUnit\Framework\TestCase;
+use Semaio\TrelloApi\Manager;
 
-class WrapperTest extends TestCase
-{
-    /**
-     * @test
-     */
-    public function shouldHaveToPassRepoToWrapperConstructor(): void
-    {
+class WrapperTest extends TestCase {
+
+    /** @test */
+    public function shouldHaveToPassRepoToWrapperConstructor(): void {
+
         $repository = $this->getRepositoryMock();
-        $wrapper = new \LaravelTrello\Wrapper($repository);
+        $wrapper    = new Wrapper($repository);
         $this->assertInstanceOf(Repository::class, $wrapper->config);
-    }
 
-    /**
-     * @test
-     */
-    public function shouldGetManagerFromWrapper(): void
-    {
+    } //end shouldHaveToPassRepoToWrapperConstructor()
+
+    /** @test */
+    public function shouldGetManagerFromWrapper(): void {
+
         $repository = $this->getRepositoryMock();
-        $wrapper = new \LaravelTrello\Wrapper($repository);
+        $wrapper    = new Wrapper($repository);
         $this->assertInstanceOf(Manager::class, $wrapper->manager());
-    }
 
-    /**
-     * @test
-     *
-     */
-    public function shouldNotGetMagicApiInstance(): void
-    {
+    } //end shouldGetManagerFromWrapper()
+
+    /** @test */
+    public function shouldNotGetMagicApiInstance(): void {
+
         $this->expectException(TypeError::class);
         $repository = $this->getRepositoryMock();
-        $wrapper = new \LaravelTrello\Wrapper($repository);
+        $wrapper    = new Wrapper($repository);
         $wrapper->doNotExist();
-    }
 
-    private function getRepositoryMock()
-    {
+    } //end shouldNotGetMagicApiInstance()
+
+    // phpcs:disable PEAR.Commenting.FunctionComment.Missing
+    private function getRepositoryMock() {
+
         $mock = $this->getMockBuilder(Repository::class)->getMock();
 
         $mock->method('get')->willReturn('');
 
         return $mock;
-    }
-}
+
+    } //end getRepositoryMock()
+
+} //end class

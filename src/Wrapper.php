@@ -2,11 +2,11 @@
 
 namespace LaravelTrello;
 
-use Semaio\TrelloApi\Client;
-use Semaio\TrelloApi\Manager;
-use Semaio\TrelloApi\ClientBuilder;
 use Illuminate\Contracts\Config\Repository;
 use Psr\Http\Client\ClientInterface as HttpClientInterface;
+use Semaio\TrelloApi\Client;
+use Semaio\TrelloApi\ClientBuilder;
+use Semaio\TrelloApi\Manager;
 
 /**
  * @method \Semaio\TrelloApi\Api\ActionApi       getActionApi()
@@ -19,9 +19,11 @@ use Psr\Http\Client\ClientInterface as HttpClientInterface;
  * @method \Semaio\TrelloApi\Api\OrganizationApi getOrganizationApi()
  * @method \Semaio\TrelloApi\Api\TokenApi        getTokenApi()
  * @method \Semaio\TrelloApi\Api\WebhookApi      getWebhookApi()
+ *
+ * phpcs:disable PEAR.Commenting.FunctionComment.Missing
  */
-class Wrapper
-{
+final class Wrapper {
+
     /**
      * Config instance.
      *
@@ -57,45 +59,58 @@ class Wrapper
      */
     private $cache;
 
-    public function __construct(Repository $config, HttpClientInterface $httpClient = null)
-    {
+    public function __construct(Repository $config, HttpClientInterface $httpClient=null) {
+
         // Set the config
         $this->config = $config;
 
         // Make the client instance
-        $this->clientBuilder = new ClientBuilder();
+        $this->clientBuilder = new ClientBuilder;
         if ($httpClient !== null) {
             $this->clientBuilder->setHttpClient($httpClient);
         }
-        $this->client = $this->clientBuilder->build($this->config->get('trello.api_key'), $this->config->get('trello.api_token'));
-    }
+        $this->client = $this->clientBuilder->build(
+            $this->config->get('trello.api_key'),
+            $this->config->get('trello.api_token'),
+        );
 
-    public function setUserToken(string $userApiToken): void
-    {
+    } //end __construct()
+
+    public function setUserToken(string $userApiToken): void {
+
         $this->client = $this->clientBuilder->build($this->config->get('trello.api_key'), $userApiToken);
-    }
 
-    public function manager(): Manager
-    {
+    } //end setUserToken()
+
+    public function manager(): Manager {
+
         if (!isset($this->manager)) {
             $this->manager = new Manager($this->client);
         }
 
         return $this->manager;
-    }
 
-    public function getClient(): Client
-    {
+    } //end manager()
+
+    public function getClient(): Client {
+
         return $this->client;
-    }
 
-    public function setClient(Client $client): Client
-    {
+    } //end getClient()
+
+    public function setClient(Client $client): Client {
+
         return $this->client = $client;
-    }
 
-    public function getObjectId(string $type, string $name, array $options = [])
-    {
+    } //end setClient()
+
+    /**
+     * case statements are ok
+     *
+     * @SuppressWarnings("Complexity")
+     */
+    public function getObjectId(string $type, string $name, array $options=[]) {
+
         switch ($type) {
             case 'organization':
                 if (!isset($this->cache['organizations'])) {
@@ -178,25 +193,31 @@ class Wrapper
         }
 
         return false;
-    }
 
-    public function getDefaultOrganizationId()
-    {
+    } //end getObjectId()
+
+    public function getDefaultOrganizationId() {
+
         return $this->getObjectId('organization', $this->config->get('trello.organization'));
-    }
 
-    public function getDefaultBoardId()
-    {
+    } //end getDefaultOrganizationId()
+
+    public function getDefaultBoardId() {
+
         return $this->getObjectId('board', $this->config->get('trello.board'));
-    }
 
-    public function getDefaultListId()
-    {
+    } //end getDefaultBoardId()
+
+    public function getDefaultListId() {
+
         return $this->getObjectId('list', $this->config->get('trello.list'));
-    }
 
-    public function __call($name, $arguments)
-    {
+    } //end getDefaultListId()
+
+    public function __call($name, $arguments) {
+
         return call_user_func_array([$this->client, $name], $arguments);
-    }
-}
+
+    } //end __call()
+
+} //end class
